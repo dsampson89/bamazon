@@ -20,7 +20,6 @@ connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     showTable();
-    connection.end();
   });
 
   var showTable = function() {
@@ -35,17 +34,46 @@ connection.connect(function(err) {
   } 
 
   var promptCustomer = function(res){
-    inquirer.prompt([{
+    inquirer.prompt([
+      {
       type: "input",
       name: "choice",
       message: "What would you like to purchase?"
-    }]).then(function(answer){
+    }
+  ]).then(function(answer){
       var correct = false;
       for(var i=0; i<res.length; i++){
         if(res[i].product_name == answer.choice){
           correct = true;
           var product = answer.choice;
           var id = i;
+
+          inquirer.prompt(
+            {
+              type:"input",
+              name:"quant",
+              message:"How much would you like to buy?",
+              validate: function(value){
+                if(isNaN(value)== false){
+                  return true;
+                } else{
+                  return false;
+                }
+              }
+            } 
+          ).then(function(answer){
+            if((res[id].stock_quanity-answer.quant)>0){
+              connection.query("UPDATE products SET stock_quanity='"+
+              (res[id].stock_quanity-answer.quant)+"' WHERE product_name='"+product+"'", 
+                function(err, res2){
+                  console.log("Item[s] Purchased!!!");
+                  showTable();
+                })
+            } else{
+                console.log("Insufficient quantity!");
+                promptCustomer(res);
+            }
+          })
         }
       }
     })
