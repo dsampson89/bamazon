@@ -30,6 +30,23 @@ connection.connect(function(err) {
           +res[i].department_name+" || "+res[i].price+" || "
           +res[i].stock_quanity+"\n");
         }
+      promptCustomer(res)
       })
   } 
 
+  var promptCustomer = function(res){
+    inquirer.prompt([{
+      type: "input",
+      name: "choice",
+      message: "What would you like to purchase?"
+    }]).then(function(answer){
+      var correct = false;
+      for(var i=0; i<res.length; i++){
+        if(res[i].product_name == answer.choice){
+          correct = true;
+          var product = answer.choice;
+          var id = i;
+        }
+      }
+    })
+  }
