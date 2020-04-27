@@ -75,6 +75,11 @@ connection.connect(function(err) {
             }
           })
         }
+        
+      }
+      if(i==res.length && correct==false){
+        console.log("Not a valid selection!");
+        promptCustomer(res);
       }
     })
   }
